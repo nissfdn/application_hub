@@ -1,14 +1,249 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Subnet Planner</title>
+
+    <!-- Google Font Yüklemesi -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- TEK DOSYADA CSS KODLARI -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .planner-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .planner-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .planner-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .planner-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 14px;
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-calculate:hover {
+            background-color: #0369a1;
+        }
+
+        /* SONUÇ RAPORU STİLLERİ */
+        .report-container {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 2px dashed #e2e8f0;
+        }
+
+        .report-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .report-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .report-item {
+            background-color: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .report-item.full-width {
+            grid-column: span 2;
+        }
+
+        .item-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .item-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            font-family: monospace;
+        }
+
+        .item-value.highlight {
+            color: #0284c7;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: #0f172a;
+        }
+    </style>
 </head>
 <body>
-<form method="POST">
-    <input type="number" name="host_num">
-    <button type="submit">Calculate</button>
 
-</form>
+    <div class="planner-card">
+        <div class="planner-header">
+            <h2>Network Subnet Planner</h2>
+            <p>Calculate the subnet details by entering the required number of hosts</p>
+        </div>
+
+        <!-- FORMA VERİ GİRİŞİ -->
+        <form method="POST">
+            <div class="form-group">
+                <label for="host_num">Target Host Requirement:</label>
+                <input type="number" min="1" name="host_num" id="host_num" required placeholder="Örn: 50" value="{{ host_num if host_num else '' }}">
+            </div>
+
+            <button type="submit" class="btn-calculate">Calculate Subnet</button>
+        </form>
+
+        <!-- HESAPLAMA SONUÇLARI (Sadece POST işlemi bittiğinde ekrana gelir) -->
+        {% if total_host_capacity %}
+        <div class="report-container">
+            <div class="report-title">
+                <span>[ASSIGNMENT RESOLUTION REPORT]</span>
+                <span class="report-badge">{{ network_class }}</span>
+            </div>
+
+            <div class="report-grid">
+                <div class="report-item">
+                    <div class="item-label">Target Host Requirements</div>
+                    <div class="item-value">{{ host_num }} host</div>
+                </div>
+
+                <div class="report-item">
+                    <div class="item-label">Optimized Prefix Length</div>
+                    <div class="item-value highlight">/{{ network_bits }}</div>
+                </div>
+
+                <div class="report-item">
+                    <div class="item-label">Generated Subnet Mask</div>
+                    <div class="item-value">{{ subnet_mask }}</div>
+                </div>
+
+                <div class="report-item">
+                    <div class="item-label">Assigned Network Address</div>
+                    <div class="item-value">{{ network_address }}</div>
+                </div>
+
+                <div class="report-item full-width">
+                    <div class="item-label">Usable Host Address Range</div>
+                    <div class="item-value highlight">{{ first_element }} &rarr; {{ last_element }}</div>
+                </div>
+
+                <div class="report-item">
+                    <div class="item-label">Calculated Broadcast IP</div>
+                    <div class="item-value">{{ broadcast_address }}</div>
+                </div>
+
+                <div class="report-item">
+                    <div class="item-label">Total Subnet Capacity</div>
+                    <div class="item-value">{{ total_host_capacity }} slots</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <a href="/" class="back-link">&larr; Back to Home Page</a>
+    </div>
+
 </body>
 </html>
