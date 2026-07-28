@@ -36,6 +36,8 @@ def app1():
         #girdiyi alma
         host_num = int(request.form["host_num"])  #html de int yazsak dahi flask her zaman str getiri html den bu yuzden int donusumu yapiyoruz
 
+        #min max deger kontrolu
+
         if host_num < 1:
             return render_template(
                 "NetworkSubnetPlanner.html",
