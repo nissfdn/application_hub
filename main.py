@@ -1,3 +1,5 @@
+from http import HTTPStatus
+from flask import Response
 from flask import Flask, request, render_template
 import math
 import ipaddress #subnet icin
@@ -34,6 +36,18 @@ def app1():
         #girdiyi alma
         host_num = int(request.form["host_num"])  #html de int yazsak dahi flask her zaman str getiri html den bu yuzden int donusumu yapiyoruz
 
+        if host_num < 1:
+            return render_template(
+                "NetworkSubnetPlanner.html",
+                error="Host count must be greater than 0."
+            ), 400
+
+        if host_num > 16777212:
+            return render_template(
+                "NetworkSubnetPlanner.html",
+                error="Maximum supported host count is 16,777,212."
+            ), 400
+
         #network id ve broadcast icn iki adres ekle
         needed_addresses = host_num+2
 
@@ -57,15 +71,17 @@ def app1():
         subnet_mask=str(mask_network.netmask) #subnet bulmak icin yani agdan kac addresslik yer acilmali onu ogrenmek icin
 
         #class lari ayiriyorum
-        if needed_addresses <= 254:
+
+        if needed_addresses <= 254 :
             network_class = 'Class C'
             base_network = "192.168.0.0"
         elif needed_addresses <= 65534:
             network_class = 'Class B'
             base_network = "172.16.0.0"
-        else:
+        elif needed_addresses <= 16777214:
             network_class = 'Class A'
             base_network = "10.0.0.0"
+
 
         #assign edilen ag
         assigned_network= ipaddress.IPv4Network(f"{base_network}/{network_bits}")

@@ -175,6 +175,17 @@
         .back-link:hover {
             color: #0f172a;
         }
+
+        .error-box {
+            margin-top:15px;
+            padding:12px;
+            border-radius:10px;
+            background:#fee2e2;
+            border:1px solid #ef4444;
+            color:#b91c1c;
+            font-weight:600;
+        }
+
     </style>
 </head>
 <body>
@@ -189,11 +200,14 @@
         <form method="POST">
             <div class="form-group">
                 <label for="host_num">Target Host Requirement:</label>
-                <input type="number" min="1" name="host_num" id="host_num" required placeholder="Örn: 50" value="{{ host_num if host_num else '' }}">
+                <input type="number"  name="host_num" id="host_num" required placeholder="e.g.: 50" value="{{ host_num if host_num else '' }}">
+
             </div>
 
             <button type="submit" class="btn-calculate">Calculate Subnet</button>
         </form>
+
+        {% if error %} <div class="error-box"> {{ error }} </div> {% endif %} <!-- host sayisi icin error (min max) -->
 
         <!-- HESAPLAMA SONUÇLARI (Sadece POST işlemi bittiğinde ekrana gelir) -->
         {% if total_host_capacity %}
@@ -246,4 +260,5 @@
     </div>
 
 </body>
+
 </html>
