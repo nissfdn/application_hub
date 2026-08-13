@@ -3,6 +3,7 @@ from flask import Response
 from flask import Flask, request, render_template
 import math
 import ipaddress #subnet icin
+from flask import redirect
 app = Flask(__name__)
 
 @app.route("/")
@@ -124,9 +125,10 @@ def app1():
             total_host_capacity=total_host_capacity
         )
 
-@app.route("/app2")
+#Security Operations Lab Application
+@app.route("/secops")
 def app2():
-    return render_template("app2.html")
+    return redirect("https://sec-ops-lab.vercel.app")
 
 @app.route("/app3")
 def app3():
