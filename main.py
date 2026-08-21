@@ -130,9 +130,9 @@ def app1():
 def app2():
     return redirect("https://sec-ops-lab.vercel.app")
 
-@app.route("/app3")
+@app.route("/capec")
 def app3():
-    return render_template("app3.html")
+    return redirect("https://capec-project.vercel.app/")
 
 if __name__ == "__main__":
     app.run(debug=True)
