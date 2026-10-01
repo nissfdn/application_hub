@@ -50,3 +50,27 @@ A Flask-based cybersecurity learning and security operations laboratory that pro
 * scrypt
 * PBKDF2
 * Vercel
+
+# APP3: CAPEC Explorer
+
+A Flask-based cybersecurity application developed to collect, process, store, and explore **MITRE CAPEC** attack pattern data. The application downloads the CAPEC dataset, processes the CSV data, stores it in PostgreSQL using Supabase, and provides a web interface for exploring attack patterns.
+
+## Features
+
+* Downloads and extracts the CAPEC dataset
+* Processes CSV data using Pandas
+* Stores data in PostgreSQL with Supabase
+* Provides a web interface for exploring CAPEC data
+* Supports data parsing and processing
+
+## Technologies
+
+* Python
+* Flask
+* Jinja2
+* Pandas
+* Requests
+* PostgreSQL
+* Supabase
+* HTML/CSS
+* Vercel
